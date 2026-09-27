@@ -15,9 +15,7 @@ Minimap but with 3D terrain! The keybind is `M`
 
 See entities on your radar with the targets selection in the menu!
 
-Featuring two render modes:
-- LINES - wireframe
-- QUADS - filled voxels
+Blocks render as filled voxels (`QUADS`). The old wireframe `LINES` mode has been removed.
 
 You can also disable map coloring to color code block types!
 - WHITE - non-full block

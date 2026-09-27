@@ -68,3 +68,25 @@ your call on the font-resolution design question.
      callback and `GuiScreen.render`.
    - Verified numerically against JOML: the perspective matrix gives `w = 0.000` for a z = 0 GUI
      vertex, the orthographic one gives `w = 1.000` with correct NDC output.
+
+## Fixed: minimap rendered as block-coloured lines instead of solid voxels
+
+9. **The wireframe `LINES` render method was still reachable and was being selected**
+   - Files: `render/simulation/SimulationMethod.java`, `render/simulation/SimulatedBlock.java`,
+     `render/simulation/SimulationRenderer.java`, `config/SettingData.java`
+   - Symptom: the map was visible but drew as 1px outlines in the block colour ("looks like
+     lines") rather than filled 3D blocks.
+   - Diagnosis (measured, not guessed): rendering the port's own projection maths at the user's
+     pitch/scale and comparing pixel statistics shows the output is a wireframe.
+     - Flat `QUADS`: 1.6% of horizontal runs are <= 2px, median run 200.
+     - `LINES`: 52.9% thin, median run 2.
+     - User screenshot: 52.1% thin, median run 2.
+     - Colours were also full-brightness `MapColor` values (`0x707070` stone, `0x7FB238` grass),
+       which only happens at the `LINES` alpha of `0xFF`; the port's `QUADS` used `0x50`.
+     - An erosion test (fraction of pixels surviving 4-neighbour erosion) gave 45% for the user
+       shot versus 96% for `QUADS` and 49% for `LINES` - i.e. thin structures.
+   - Root cause: `LINES` is selected only via the persisted `render-method` config value, so an
+     old/hand-edited config silently downgraded the map. The default was already `QUADS`.
+   - Fix: `LINES` is removed entirely - filled voxels are the only mode - and the highlighted-block
+     pass (which always drew lines) now draws voxels too. `SettingData.revert` now falls back to
+     the declared default when a persisted enum name no longer resolves, instead of storing `null`.

@@ -78,7 +78,13 @@ public class SettingData {
         String id = setting.getId();
 
         if (setting instanceof EnumSetting<?> v) {
-            v.setVal(v.valueOf(stringEntries.getOrDefault(id, v.getDef().name())));
+            // A config written by an older build can name a constant that no longer exists (e.g.
+            // the removed "LINES" render method). valueOf() returns null for those, so fall back
+            // to the declared default instead of propagating a null value.
+            Object parsed = v.valueOf(stringEntries.getOrDefault(id, v.getDef().name()));
+            @SuppressWarnings("unchecked")
+            Setting<Object> raw = (Setting<Object>) v;
+            raw.setVal(parsed != null ? parsed : v.getDef());
         }
         else if (setting instanceof DictionarySetting<?> v) {
             v.getVal().overwrite(dictionaryEntries.getOrDefault(id, new HashMap<>()), true);

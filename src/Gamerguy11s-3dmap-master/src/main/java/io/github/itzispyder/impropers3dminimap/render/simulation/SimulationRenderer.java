@@ -75,7 +75,7 @@ public class SimulationRenderer {
     }
 
     public void renderWorldHighlighted(Matrix3x2fStack matrices, Vec3d camera, Quaternionf rotation) {
-        BufferBuilder buf = RenderUtils.getBuffer(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BufferBuilder buf = RenderUtils.getBuffer(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         Matrix4f mat = RenderUtils.toMatrix4f(matrices);
 
         for (SimulatedBlock block : sortedByDistance(highlightedBlocks, camera))
@@ -87,7 +87,7 @@ public class SimulationRenderer {
         if (empty)
             return;
 
-        RenderConstants.LINES.draw(draw);
+        RenderConstants.QUADS.draw(draw);
     }
 
     /**

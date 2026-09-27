@@ -64,37 +64,8 @@ public class SimulatedBlock {
     public void render(Matrix4f position, BufferBuilder vertexConsumer, Simulation simulation, Vec3d camera, Quaternionf rotation) {
         Vec3d pos = getOffsetPos(camera);
 
-        for (Box box : collisions) {
-            SimulationMethod method = simulation.getMethod();
-            if (method == SimulationMethod.LINES || highlight)
-                boxLines(position, vertexConsumer, simulation, box, pos, rotation);
-            else if (method == SimulationMethod.QUADS)
-                boxQuads(position, vertexConsumer, simulation, box, pos, rotation);
-        }
-    }
-
-    private void boxLines(Matrix4f position, BufferBuilder vertexConsumer, Simulation simulation, Box box, Vec3d offset, Quaternionf rotation) {
-        float x1 = (float) (box.minX + offset.x);
-        float y1 = (float) (box.minY + offset.y);
-        float z1 = (float) (box.minZ + offset.z);
-        float x2 = (float) (box.maxX + offset.x);
-        float y2 = (float) (box.maxY + offset.y);
-        float z2 = (float) (box.maxZ + offset.z);
-
-        line(position, vertexConsumer, simulation, rotation,   x1, y1, z1,   x2, y1, z1); // bottom 4
-        line(position, vertexConsumer, simulation, rotation,   x2, y1, z1,   x2, y1, z2);
-        line(position, vertexConsumer, simulation, rotation,   x2, y1, z2,   x1, y1, z2);
-        line(position, vertexConsumer, simulation, rotation,   x1, y1, z2,   x1, y1, z1);
-
-        line(position, vertexConsumer, simulation, rotation,   x1, y2, z1,   x2, y2, z1); // top 4
-        line(position, vertexConsumer, simulation, rotation,   x2, y2, z1,   x2, y2, z2);
-        line(position, vertexConsumer, simulation, rotation,   x2, y2, z2,   x1, y2, z2);
-        line(position, vertexConsumer, simulation, rotation,   x1, y2, z2,   x1, y2, z1);
-
-        line(position, vertexConsumer, simulation, rotation,   x1, y1, z1,   x1, y2, z1); // pillars
-        line(position, vertexConsumer, simulation, rotation,   x2, y1, z1,   x2, y2, z1);
-        line(position, vertexConsumer, simulation, rotation,   x2, y1, z2,   x2, y2, z2);
-        line(position, vertexConsumer, simulation, rotation,   x1, y1, z2,   x1, y2, z2);
+        for (Box box : collisions)
+            boxQuads(position, vertexConsumer, simulation, box, pos, rotation);
     }
 
     private void boxQuads(Matrix4f position, BufferBuilder vertexConsumer, Simulation simulation, Box box, Vec3d offset, Quaternionf rotation) {
